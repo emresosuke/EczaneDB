@@ -38,4 +38,21 @@ app.UseAuthorization();
 
 app.MapControllers();
 
+// 🚀 REPOYU ALAN KİŞİ İÇİN OTOMATİK VERİTABANI KURULUMU
+using (var scope = app.Services.CreateScope())
+{
+    var services = scope.ServiceProvider;
+    try
+    {
+        var context = services.GetRequiredService<AppDbContext>();
+        // Eğer veritabanı yoksa oluşturur, migration'lar eksikse otomatik basar!
+        context.Database.Migrate();
+        Console.WriteLine("✅ Veritabanı yapısı başarıyla kontrol edildi ve güncellendi.");
+    }
+    catch (Exception ex)
+    {
+        Console.WriteLine("❌ Otomatik veritabanı kurulumunda hata oluştu: " + ex.Message);
+    }
+}
+
 app.Run();

@@ -50,9 +50,9 @@ EczaneDB/
 
 ---
 
-## 🚀 Setup and Execution Guide
+## 🚀 Setup and Execution Guide / Kurulum Kılavuzu
 
-Follow the steps below in order to get the project fully up and running on your local environment:
+Bu projeyi yerelinizde veya kendi bulut ortamınızda çalıştırmak için aşağıdaki adımları takip ediniz.
 
 ### 1. Clone the Repo
 
@@ -61,13 +61,14 @@ git clone https://github.com/emresosuke/EczaneDB.git
 cd EczaneDB
 ```
 
-### 2. Start the Database (Docker)
+### 2. 🛠️ Veritabanı Kurulumu (Kendi Ortamınız)
+Proje, harici bir PostgreSQL (Lokal veya Supabase) mimarisi beklemektedir. Herkesin verisinin izole kalması için:
 
-Make sure Docker Desktop is running on your computer and spin up the PostgreSQL container in an isolated manner:
+1. Kendinize ait bir PostgreSQL veritabanı (veya ücretsiz Supabase projesi) oluşturun.
+2. `backend/EczaneManagement.Api/appsettings.json` dosyasını açın.
+3. `DefaultConnection` alanına kendi veritabanı bağlantı adresinizi yapıştırın.
 
-```bash
-docker run --name eczane-postgres -e POSTGRES_PASSWORD=1234 -p 5432:5432 -d postgres
-```
+> **Not:** Projede `Auto-Migration` özelliği aktiftir. Uygulamayı ilk kez `dotnet run` ile başlattığınızda, tablolar veritabanınızda otomatik olarak inşa edilecektir. Ekstra bir SQL scripti çalıştırmanıza gerek yoktur.
 
 ### 3. Seed the Database (Data Seeding)
 
