@@ -42,15 +42,63 @@ EczaneDB/
         ├── Program.cs      # Uygulama ayağa kalkış ve servis ayarları
         └── appsettings.json # Veritabanı bağlantı dizesi
 
-🚀 Kurulum ve Çalıştırma RehberiProjeyi kendi yerel ortamınızda tam kapasiteyle ayağa kaldırmak için aşağıdaki adımları sırasıyla uygulayın:1. Repoyu KlonlayınBashgit clone [https://github.com/emresosuke/EczaneDB.git](https://github.com/emresosuke/EczaneDB.git)
+## 🚀 Kurulum ve Çalıştırma Rehberi
+
+Projeyi kendi yerel ortamınızda tam kapasiteyle ayağa kaldırmak için aşağıdaki adımları sırasıyla uygulayın:
+
+### 1. Repoyu Klonlayın
+
+```bash
+git clone https://github.com/emresosuke/EczaneDB.git
 cd EczaneDB
-2. Veritabanını Başlatın (Docker)Bilgisayarınızda Docker Desktop'ın çalıştığından emin olun ve PostgreSQL konteynerini izole olarak ayağa kaldırın:Bashdocker run --name eczane-postgres -e POSTGRES_PASSWORD=1234 -p 5432:5432 -d postgres
-3. Veritabanını Tohumlayın (Data Seeding)Boş veritabanına yapay eczane envanterini ve hasta verilerini basmak için Python scriptini çalıştırın:Bashcd database
+```
+
+### 2. Veritabanını Başlatın (Docker)
+
+Bilgisayarınızda Docker Desktop'ın çalıştığından emin olun ve PostgreSQL konteynerini izole olarak ayağa kaldırın:
+
+```bash
+docker run --name eczane-postgres -e POSTGRES_PASSWORD=1234 -p 5432:5432 -d postgres
+```
+
+### 3. Veritabanını Tohumlayın (Data Seeding)
+
+Boş veritabanına yapay eczane envanterini ve hasta verilerini basmak için Python scriptini çalıştırın:
+
+```bash
+cd database
 pip install -r requirements.txt
 python seed.py
 cd ..
-4. .NET API'yi ÇalıştırınBackend klasörüne geçerek API uygulamasını başlatın:Bashcd backend/EczaneManagement.Api
+```
+
+### 4. .NET API'yi Çalıştırın
+
+Backend klasörüne geçerek API uygulamasını başlatın:
+
+```bash
+cd backend/EczaneManagement.Api
 dotnet restore
 dotnet build
 dotnet run
-🌐 API Uç Noktaları (Endpoints)Proje ayağa kalktıktan sonra http://localhost:5123/swagger adresinden arayüze erişebilir veya aşağıdaki uç noktaları kullanabilirsiniz:MetotEndpointAçıklamaGET/api/Medicineİsim veya barkoda göre dinamik ilaç araması yapar.GET/api/Medicine/{id}Belirli bir ilacın tüm teknik detaylarını getirir.GET/api/Patient?tc={tcNo}TC Kimlik No ile hastanın sistemdeki kaydını bulur.POST/api/PatientSisteme yeni bir hasta (CRM kaydı) ekler.POST/api/SaleHasta ve İlaç ID'si ile reçete kontrolü yapıp satışı tamamlar.Geliştirici: Yunus Emre KayaBu proje, Akdeniz Üniversitesi Bilgisayar Programcılığı bölümü çalışmaları kapsamında tam donanımlı bir backend mimarisi kurgulamak amacıyla geliştirilmektedir.
+```
+
+---
+
+## 🌐 API Uç Noktaları (Endpoints)
+
+Proje ayağa kalktıktan sonra `http://localhost:5123/swagger` adresinden arayüze erişebilir veya aşağıdaki uç noktaları kullanabilirsiniz:
+
+| Metot | Endpoint | Açıklama |
+| :--- | :--- | :--- |
+| **GET** | `/api/Medicine` | İsim veya barkoda göre dinamik ilaç araması yapar. |
+| **GET** | `/api/Medicine/{id}` | Belirli bir ilacın tüm teknik detaylarını getirir. |
+| **GET** | `/api/Patient?tc={tcNo}` | TC Kimlik No ile hastanın sistemdeki kaydını bulur. |
+| **POST** | `/api/Patient` | Sisteme yeni bir hasta (CRM kaydı) ekler. |
+| **POST** | `/api/Sale` | Hasta ve İlaç ID'si ile reçete kontrolü yapıp satışı tamamlar. |
+
+---
+
+**Geliştirici:** Yunus Emre Kaya
+
+*Bu proje, Akdeniz Üniversitesi Bilgisayar Programcılığı bölümü çalışmaları kapsamında tam donanımlı bir backend mimarisi kurgulamak amacıyla geliştirilmektedir.*
