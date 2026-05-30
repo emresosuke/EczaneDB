@@ -174,7 +174,6 @@ function App() {
   return (
     <div style={{ maxWidth: '950px', margin: '0 auto', padding: '40px', fontFamily: 'system-ui' }}>
       
-      {/* HEADER BAR */}
       <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '30px' }}>
         <h1 style={{ color: '#2c3e50', margin: 0 }}>💊 EczaneDB Terminali</h1>
         <button onClick={fetchSalesHistory} style={{ padding: '12px 20px', backgroundColor: '#f1c40f', color: '#d35400', border: 'none', borderRadius: '6px', cursor: 'pointer', fontSize: '16px', fontWeight: 'bold', boxShadow: '0 4px 6px rgba(0,0,0,0.1)' }}>
@@ -182,7 +181,6 @@ function App() {
         </button>
       </div>
 
-      {/* LOW STOCK ALERTS */}
       {medicines.filter(m => m.stockQuantity < 5).length > 0 && (
         <div style={{ backgroundColor: '#fdf2e9', borderLeft: '5px solid #e67e22', padding: '15px', marginBottom: '20px', borderRadius: '4px' }}>
           <h3 style={{ margin: '0 0 10px 0', color: '#d35400' }}>🚨 Kritik Stok Uyarısı!</h3>
@@ -318,7 +316,6 @@ function App() {
         <div style={{ position: 'fixed', top: 0, left: 0, width: '100%', height: '100%', backgroundColor: 'rgba(0,0,0,0.5)', backdropFilter: 'blur(5px)', display: 'flex', justifyContent: 'center', alignItems: 'center', zIndex: 1000 }}>
           <div style={{ backgroundColor: 'white', borderRadius: '10px', width: '80%', maxWidth: '800px', maxHeight: '80vh', display: 'flex', flexDirection: 'column', overflow: 'hidden' }}>
             
-            {/* STICKY HEADER */}
             <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', padding: '20px 30px', backgroundColor: '#f8f9fa', borderBottom: '2px solid #ddd' }}>
               <h2 style={{ margin: 0, color: '#8e44ad' }}>🗄️ Veritabanı (Hastalar)</h2>
               <div style={{ display: 'flex', gap: '10px' }}>
@@ -329,7 +326,6 @@ function App() {
               </div>
             </div>
             
-            {/* SCROLLABLE TABLE AREA */}
             <div style={{ padding: '0 30px 20px 30px', overflowY: 'auto', flex: 1, scrollbarWidth: 'none', msOverflowStyle: 'none' }}>
               <style>
                 {`
@@ -396,7 +392,6 @@ function App() {
         </div>
       )}
 
-      {/* RECEIPT MODAL */}
       {receiptData && (
         <div style={{ position: 'fixed', top: 0, left: 0, width: '100%', height: '100%', backgroundColor: 'rgba(0,0,0,0.7)', backdropFilter: 'blur(5px)', display: 'flex', justifyContent: 'center', alignItems: 'center', zIndex: 2000 }}>
           <style>
@@ -464,7 +459,6 @@ function App() {
         </div>
       )}
 
-      {/* SALES HISTORY MODAL (KASA) */}
       {isSalesModalOpen && (
         <div style={{ position: 'fixed', top: 0, left: 0, width: '100%', height: '100%', backgroundColor: 'rgba(0,0,0,0.6)', backdropFilter: 'blur(5px)', display: 'flex', justifyContent: 'center', alignItems: 'center', zIndex: 1500 }}>
           <div style={{ backgroundColor: '#f8f9fa', borderRadius: '12px', width: '90%', maxWidth: '900px', maxHeight: '85vh', display: 'flex', flexDirection: 'column', overflow: 'hidden', boxShadow: '0 15px 30px rgba(0,0,0,0.2)' }}>

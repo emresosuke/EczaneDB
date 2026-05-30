@@ -15,22 +15,18 @@ namespace EczaneManagement.Api.Data
         public DbSet<CartItem> CartItems { get; set; }
         public DbSet<Stock> Stocks { get; set; }
 
-        // 🚀 POSTGRESQL HARF KRİZİNİ KÖKTEN ÇÖZEN SIHIRLI DOKUNUŞ
         protected override void OnModelCreating(ModelBuilder modelBuilder)
         {
             base.OnModelCreating(modelBuilder);
 
-            // Veritabanındaki tüm tablo ve kolon isimlerini otomatik olarak küçük harfe zorlar!
             foreach (var entity in modelBuilder.Model.GetEntityTypes())
             {
-                // Tablo adını küçük harf yap
                 var tableName = entity.GetTableName();
                 if (!string.IsNullOrEmpty(tableName))
                 {
                     entity.SetTableName(tableName.ToLower());
                 }
 
-                // Kolon isimlerini küçük harf yap
                 foreach (var property in entity.GetProperties())
                 {
                     var columnName = property.GetColumnName();
@@ -40,7 +36,6 @@ namespace EczaneManagement.Api.Data
                     }
                 }
 
-                // Yabancı anahtar (Foreign Key) isimlerini küçük harf yap
                 foreach (var fk in entity.GetForeignKeys())
                 {
                     var constraintName = fk.GetConstraintName();
@@ -50,7 +45,6 @@ namespace EczaneManagement.Api.Data
                     }
                 }
 
-                // Primary Key isimlerini küçük harf yap
                 foreach (var key in entity.GetKeys())
                 {
                     var keyName = key.GetName();

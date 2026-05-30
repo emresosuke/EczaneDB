@@ -185,7 +185,7 @@ namespace EczaneManagement.Api.Controllers
                         cartId = cart.Id,
                         date = DateTime.UtcNow,
                         patientTc = cart.PatientTc,
-                        doctorName = "Dr. " + cart.PatientTc.Substring(0, 3), // mock
+                        doctorName = "Dr. " + cart.PatientTc.Substring(0, 3),
                         totalAmount = totalAmount
                     }
                 });
