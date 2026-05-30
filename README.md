@@ -114,5 +114,3 @@ Proje ayağa kalktıktan sonra `http://localhost:5123/swagger` adresinden arayü
 ---
 
 **Geliştirici:** Yunus Emre Kaya
-
-*Bu proje, Akdeniz Üniversitesi Bilgisayar Programcılığı bölümü çalışmaları kapsamında tam donanımlı bir backend ve frontend mimarisi kurgulamak amacıyla geliştirilmektedir.*
