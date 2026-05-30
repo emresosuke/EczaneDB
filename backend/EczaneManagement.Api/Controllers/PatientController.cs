@@ -16,7 +16,6 @@ namespace EczaneManagement.Api.Controllers
             _context = context;
         }
 
-        // 1. GET: api/Patient?tc=12345678901 (TC No ile Hasta Sorgulama)
         [HttpGet]
         public async Task<IActionResult> GetPatientByTc([FromQuery] string? tc)
         {
@@ -36,7 +35,6 @@ namespace EczaneManagement.Api.Controllers
             return Ok(patient);
         }
 
-        // 2. POST: api/Patient (Sisteme Yeni Hasta Kaydetme)
         [HttpPost]
         public async Task<IActionResult> CreatePatient([FromBody] Patient newPatient)
         {
@@ -45,7 +43,6 @@ namespace EczaneManagement.Api.Controllers
                 return BadRequest("Geçersiz hasta verisi.");
             }
 
-            // Aynı TC No ile daha önce kayıt yapılmış mı kontrolü
             var exists = await _context.Patients
                 .AnyAsync(p => p.IdentityNumber == newPatient.IdentityNumber);
                 

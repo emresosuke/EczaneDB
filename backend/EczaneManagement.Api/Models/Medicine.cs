@@ -25,5 +25,8 @@ namespace EczaneManagement.Api.Models
 
         [Column("requires_prescription")]
         public bool RequiresPrescription { get; set; }
+
+        [NotMapped]
+        public int StockQuantity { get; set; }
     }
 }

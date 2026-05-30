@@ -1,6 +1,6 @@
 # 💊 EczaneDB - Kapsamlı Eczane ve CRM Yönetim Sistemi
 
-EczaneDB, modern bir eczanenin günlük operasyonel iş akışlarını (ilaç envanteri, hasta/CRM yönetimi, reçete türü kontrolü ve satış işlemleri) dijitalleştirmek ve hızlandırmak amacıyla geliştirilmiş, kurumsal mimariye sahip bir **Full-Stack Web API** projesidir. 
+EczaneDB, modern bir eczanenin günlük operasyonel iş akışlarını (ilaç envanteri, hasta/CRM yönetimi, reçete türü kontrolü ve satış işlemleri) dijitalleştirmek ve hızlandırmak amacıyla geliştirilmiş, kurumsal mimariye sahip bir **Full-Stack Web Uygulaması** projesidir. 
 
 Yüksek trafikli senaryolar düşünülerek asenkron (`async/await`) yapıda tasarlanmış olup, büyük veri kümelerinde bile milisaniyeler içinde yanıt verebilen dinamik bir arama motoruna sahiptir.
 
@@ -10,13 +10,15 @@ Yüksek trafikli senaryolar düşünülerek asenkron (`async/await`) yapıda tas
 
 * **🔍 Akıllı İlaç Envanteri:** Entity Framework `ILike` fonksiyonu ile Türkçe karakter ve büyük/küçük harf duyarsız (Case-Insensitive), barkod veya isme göre anında sonuç veren dinamik arama motoru.
 * **👥 Hasta ve CRM Yönetimi:** TC Kimlik Numarası üzerinden hasta geçmişi sorgulama, sisteme yeni hasta kaydetme ve reçete takibi.
-* **📝 Reçete ve Satış Güvenliği:** Normal, Kırmızı ve Yeşil reçeteli ilaçların (örn: psikotrop ilaçlar) satışında otomatik güvenlik/reçete kontrolü ve stoktan dinamik düşüm işlemi.
+* **📝 Reçete ve Satış Güvenliği:** Normal, Kırmızı ve Yeşil reçeteli ilaçların (örn: psikotrop ilaçlar) satışında otomatik güvenlik/reçete kontrolü.
+* **📦 Gelişmiş Stok Yönetimi (FIFO):** İlaç stokları parti (batch) bazlı tutulur. Satış sırasında son kullanma tarihi en yakın olan stoktan dinamik düşüm işlemi yapılır.
 * **🧪 Büyük Veri Simülasyonu:** Python `Faker` kütüphanesi kullanılarak Türkiye standartlarına uygun üretilmiş 10.000+ satırlık yapay ilaç ve hasta verisi (Data Seeding).
 
 ---
 
 ## 🛠️ Kullanılan Teknolojiler (Tech Stack)
 
+* **Frontend:** React, Vite
 * **Backend:** .NET 8 (Web API), C#
 * **ORM:** Entity Framework Core (EF Core) + `EFCore.NamingConventions` (snake_case)
 * **Veritabanı:** PostgreSQL (Docker Konteyner Mimarisi)
@@ -34,13 +36,15 @@ EczaneDB/
 ├── database/
 │   ├── seed.py             # Veritabanını 10.000+ veriyle dolduran script
 │   └── requirements.txt    # Python bağımlılıkları
+├── frontend/               # React ile geliştirilmiş kullanıcı arayüzü (Vite)
 └── backend/
     └── EczaneManagement.Api/
         ├── Controllers/    # Medicine, Patient ve Sales API Endpoint'leri
         ├── Data/           # DbContext ve PostgreSQL bağlantı köprüsü
-        ├── Models/         # Veritabanı tablolarının C# karşılıkları
+        ├── Models/         # Veritabanı tablolarının C# karşılıkları (Stock eklendi)
         ├── Program.cs      # Uygulama ayağa kalkış ve servis ayarları
         └── appsettings.json # Veritabanı bağlantı dizesi
+```
 
 ## 🚀 Kurulum ve Çalıştırma Rehberi
 
@@ -72,7 +76,7 @@ python seed.py
 cd ..
 ```
 
-### 4. .NET API'yi Çalıştırın
+### 4. .NET API'yi Çalıştırın (Backend)
 
 Backend klasörüne geçerek API uygulamasını başlatın:
 
@@ -81,6 +85,16 @@ cd backend/EczaneManagement.Api
 dotnet restore
 dotnet build
 dotnet run
+```
+
+### 5. Kullanıcı Arayüzünü Çalıştırın (Frontend)
+
+Yeni bir terminal açın ve React uygulamasını ayağa kaldırın:
+
+```bash
+cd frontend
+npm install
+npm run dev
 ```
 
 ---
@@ -101,4 +115,4 @@ Proje ayağa kalktıktan sonra `http://localhost:5123/swagger` adresinden arayü
 
 **Geliştirici:** Yunus Emre Kaya
 
-*Bu proje, Akdeniz Üniversitesi Bilgisayar Programcılığı bölümü çalışmaları kapsamında tam donanımlı bir backend mimarisi kurgulamak amacıyla geliştirilmektedir.*
+*Bu proje, Akdeniz Üniversitesi Bilgisayar Programcılığı bölümü çalışmaları kapsamında tam donanımlı bir backend ve frontend mimarisi kurgulamak amacıyla geliştirilmektedir.*

@@ -16,18 +16,14 @@ namespace EczaneManagement.Api.Controllers
             _context = context;
         }
 
-        // 1. DİNAMİK İLAÇ ARAMA MOTORU (Arama terimine göre filtreler)
-        // GET: /api/medicine?search=parol
-       [HttpGet]
-[HttpGet]
-public async Task<IActionResult> GetMedicines(
+        [HttpGet]
+        public async Task<IActionResult> GetMedicines(
     [FromQuery] string? search, 
     [FromQuery] decimal? maxPrice, 
     [FromQuery] bool? requiresPrescription)
 {
     var query = _context.Medicines.AsQueryable();
 
-    // 1. İsim veya Barkoda göre arama (Büyük/Küçük harf duyarsız)
     if (!string.IsNullOrEmpty(search))
     {
         string searchPattern = $"%{search}%";
@@ -36,24 +32,33 @@ public async Task<IActionResult> GetMedicines(
             EF.Functions.ILike(m.Barcode, searchPattern));
     }
 
-    // 2. Maksimum Fiyata göre filtreleme (Örn: Sadece 150 TL altındaki ilaçlar)
     if (maxPrice.HasValue)
     {
         query = query.Where(m => m.BasePrice <= maxPrice.Value);
     }
 
-    // 3. Reçete Durumuna göre filtreleme (Örn: Sadece reçetesiz satılanlar)
     if (requiresPrescription.HasValue)
     {
         query = query.Where(m => m.RequiresPrescription == requiresPrescription.Value);
     }
 
     var result = await query.Take(20).ToListAsync();
+
+    var medicineIds = result.Select(m => m.Id).ToList();
+    var stocks = await _context.Stocks
+        .Where(s => medicineIds.Contains(s.MedicineId))
+        .GroupBy(s => s.MedicineId)
+        .Select(g => new { MedicineId = g.Key, TotalStock = g.Sum(s => s.Quantity) })
+        .ToDictionaryAsync(s => s.MedicineId, s => s.TotalStock);
+
+    foreach (var medicine in result)
+    {
+        medicine.StockQuantity = stocks.ContainsKey(medicine.Id) ? stocks[medicine.Id] : 0;
+    }
+
     return Ok(result);
 }
 
-        // 2. TEK BİR İLACIN DETAYINI GETİRME
-        // GET: /api/medicine/5
         [HttpGet("{id}")]
         public async Task<IActionResult> GetMedicineById(int id)
         {
@@ -63,6 +68,10 @@ public async Task<IActionResult> GetMedicines(
             {
                 return NotFound(new { message = $"{id} numaralı ilaç sistemde bulunamadı." });
             }
+
+            medicine.StockQuantity = await _context.Stocks
+                .Where(s => s.MedicineId == id)
+                .SumAsync(s => s.Quantity);
 
             return Ok(medicine);
         }

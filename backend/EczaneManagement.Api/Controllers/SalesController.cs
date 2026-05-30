@@ -19,40 +19,53 @@ namespace EczaneManagement.Api.Controllers
         [HttpPost]
         public async Task<IActionResult> ProcessSale([FromBody] SaleRequest request)
         {
-            // 1. Gelen TC numarası ile hastayı bul
             var patient = await _context.Patients
                 .FirstOrDefaultAsync(p => p.IdentityNumber == request.PatientTc);
                 
             if (patient == null)
             {
-                return NotFound("Satış iptal edildi: Sistemde bu TC numarasına ait bir hasta bulunamadı. Lütfen önce hasta kaydını yapın.");
+                return NotFound("Satış iptal edildi: Sistemde bu TC numarasına ait bir hasta bulunamadı.");
             }
 
-            // 2. Gelen ID ile ilacı bul
             var medicine = await _context.Medicines.FindAsync(request.MedicineId);
-            
             if (medicine == null)
             {
                 return NotFound("Satış iptal edildi: İlaç veritabanında bulunamadı.");
             }
 
-            // 3. KRİTİK NOKTA: Reçete Güvenlik Algoritması
-            // Eğer ilaç veritabanında "Reçete Gerektirir" (RequiresPrescription) olarak işaretliyse 
-            // ve eczacı arayüzden "Reçetesi Yok" (HasPrescription = false) olarak gönderdiyse satışı blokla!
+            var availableStock = await _context.Stocks
+                .Where(s => s.MedicineId == medicine.Id && s.Quantity > 0)
+                .OrderBy(s => s.ExpirationDate)
+                .FirstOrDefaultAsync();
+
+            if (availableStock == null)
+            {
+                return BadRequest($"Satış iptal edildi: '{medicine.Name}' isimli ilacın stoku tükenmiştir!");
+            }
+
             if (medicine.RequiresPrescription && !request.HasPrescription)
             {
                 return BadRequest($"DİKKAT: '{medicine.Name}' reçeteye tabi bir ilaçtır. Reçetesiz satışı yasal olarak yapılamaz!");
             }
 
-            // Tüm kontroller geçildiyse satışı onayla ve sanal bir dijital fiş (Receipt) oluştur
+            availableStock.Quantity--;
+            availableStock.UpdatedAt = DateTime.UtcNow;
+            _context.Stocks.Update(availableStock);
+            await _context.SaveChangesAsync();
+
+            var totalRemainingStock = await _context.Stocks
+                .Where(s => s.MedicineId == medicine.Id)
+                .SumAsync(s => s.Quantity);
+
             var receipt = new
             {
-                TransactionId = Guid.NewGuid(), // Benzersiz bir takip numarası
+                TransactionId = Guid.NewGuid(),
                 Date = DateTime.UtcNow,
-                PatientInfo = $"{patient.FirstName} {patient.LastName} ({patient.IdentityNumber})",
+                PatientInfo = $"{patient.FirstName} {patient.LastName}",
                 MedicineInfo = medicine.Name,
                 TotalAmount = medicine.BasePrice,
-                Status = "Satış İşlemi Başarıyla Onaylandı"
+                RemainingStock = totalRemainingStock,
+                Status = "Satış İşlemi Başarıyla Onaylandı ve Stoktan Düşüldü"
             };
 
             return Ok(receipt);
