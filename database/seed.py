@@ -1,22 +1,15 @@
 import os
 import random
 from datetime import datetime, timedelta
-import psycopg2
+import sqlite3
 from faker import Faker
 
 fake = Faker("tr_TR")
 
-DB_CONFIG = {
-    "host": "***GIZLI_HOST***",
-    "database": "postgres",
-    "user": "postgres",
-    "password": "***GIZLI_SIFRE***",
-    "port": "5432",
-}
-
+DB_PATH = os.path.abspath(os.path.join(os.path.dirname(__file__), "..", "backend", "EczaneManagement.Api", "eczane.db"))
 
 def get_db_connection():
-    return psycopg2.connect(**DB_CONFIG)
+    return sqlite3.connect(DB_PATH)
 
 
 def seed_data():
@@ -62,7 +55,7 @@ def seed_data():
             cursor.execute(
                 """
                 INSERT INTO medicines (barcode, name, producer_company, rec_type, base_price, requires_prescription)
-                VALUES (%s, %s, %s, %s, %s, %s) RETURNING id;
+                VALUES (?, ?, ?, ?, ?, ?) RETURNING id;
             """,
                 (barcode, name, producer, rec_type, base_price, requires_prescription),
             )
@@ -80,7 +73,7 @@ def seed_data():
                 cursor.execute(
                     """
                     INSERT INTO stocks (medicine_id, batch_number, quantity, expiration_date)
-                    VALUES (%s, %s, %s, %s);
+                    VALUES (?, ?, ?, ?);
                 """,
                     (med_id, batch_number, quantity, expiration_date),
                 )
@@ -101,7 +94,7 @@ def seed_data():
             cursor.execute(
                 """
                 INSERT INTO patients (identity_number, first_name, last_name, phone, chronic_illnesses, allergies)
-                VALUES (%s, %s, %s, %s, %s, %s) RETURNING id;
+                VALUES (?, ?, ?, ?, ?, ?) RETURNING id;
             """,
                 (identity_number, first_name, last_name, phone, chronic, allergy),
             )
@@ -118,7 +111,7 @@ def seed_data():
         #     cursor.execute(
         #         """
         #         INSERT INTO prescriptions (patient_id, doctor_name, protocol_number, prescription_date, is_approved)
-        #         VALUES (%s, %s, %s, %s, %s) RETURNING id;
+        #         VALUES (?, ?, ?, ?, ?) RETURNING id;
         #     """,
         #         (patient_id, doctor_name, protocol_number, prescription_date, is_approved),
         #     )
@@ -132,7 +125,7 @@ def seed_data():
         #         cursor.execute(
         #             """
         #             INSERT INTO prescription_items (prescription_id, medicine_id, requested_quantity, given_quantity)
-        #             VALUES (%s, %s, %s, %s);
+        #             VALUES (?, ?, ?, ?);
         #         """,
         #             (prescription_id, med_id, req_qty, given_qty),
         #         )

@@ -16,6 +16,13 @@ namespace EczaneManagement.Api.Controllers
             _context = context;
         }
 
+        [HttpGet("All")]
+        public async Task<IActionResult> GetAllPatients()
+        {
+            var patients = await _context.Patients.OrderByDescending(p => p.Id).Take(50).ToListAsync();
+            return Ok(patients);
+        }
+
         [HttpGet]
         public async Task<IActionResult> GetPatientByTc([FromQuery] string? tc)
         {
@@ -55,6 +62,20 @@ namespace EczaneManagement.Api.Controllers
             await _context.SaveChangesAsync();
 
             return CreatedAtAction(nameof(GetPatientByTc), new { tc = newPatient.IdentityNumber }, newPatient);
+        }
+        [HttpDelete("{id}")]
+        public async Task<IActionResult> DeletePatient(int id)
+        {
+            var patient = await _context.Patients.FindAsync(id);
+            if (patient == null)
+            {
+                return NotFound("Hasta bulunamadı.");
+            }
+
+            _context.Patients.Remove(patient);
+            await _context.SaveChangesAsync();
+
+            return Ok(new { message = "Hasta başarıyla silindi." });
         }
     }
 }

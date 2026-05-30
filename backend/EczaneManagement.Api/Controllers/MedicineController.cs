@@ -28,8 +28,8 @@ namespace EczaneManagement.Api.Controllers
     {
         string searchPattern = $"%{search}%";
         query = query.Where(m => 
-            EF.Functions.ILike(m.Name, searchPattern) || 
-            EF.Functions.ILike(m.Barcode, searchPattern));
+            EF.Functions.Like(m.Name, searchPattern) || 
+            EF.Functions.Like(m.Barcode, searchPattern));
     }
 
     if (maxPrice.HasValue)
@@ -74,6 +74,35 @@ namespace EczaneManagement.Api.Controllers
                 .SumAsync(s => s.Quantity);
 
             return Ok(medicine);
+        }
+
+        public class StockUpdateRequest 
+        { 
+            public int Quantity { get; set; } 
+        }
+
+        [HttpPost("{id}/stock")]
+        public async Task<IActionResult> UpdateStock(int id, [FromBody] StockUpdateRequest request)
+        {
+            var medicine = await _context.Medicines.FindAsync(id);
+            if (medicine == null) return NotFound("İlaç bulunamadı.");
+
+            var stocks = await _context.Stocks.Where(s => s.MedicineId == id).ToListAsync();
+            _context.Stocks.RemoveRange(stocks);
+            
+            var newStock = new Stock
+            {
+                MedicineId = id,
+                Quantity = request.Quantity,
+                BatchNumber = "MANUAL-UPDATE",
+                ExpirationDate = DateTime.UtcNow.AddYears(1),
+                UpdatedAt = DateTime.UtcNow
+            };
+            
+            _context.Stocks.Add(newStock);
+            await _context.SaveChangesAsync();
+
+            return Ok(new { message = "Stok başarıyla güncellendi." });
         }
     }
 }

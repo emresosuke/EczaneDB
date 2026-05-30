@@ -177,13 +177,65 @@ namespace EczaneManagement.Api.Controllers
                 await _context.SaveChangesAsync();
                 await transaction.CommitAsync(); 
 
-                return Ok("✅ E-Reçete satışı başarıyla tamamlandı, stoklar güncellendi.");
+                var totalAmount = cartItems.Sum(ci => ci.PriceAtTime * ci.Quantity);
+                
+                return Ok(new { 
+                    message = "✅ E-Reçete satışı başarıyla tamamlandı, stoklar güncellendi.",
+                    receipt = new {
+                        cartId = cart.Id,
+                        date = DateTime.UtcNow,
+                        patientTc = cart.PatientTc,
+                        doctorName = "Dr. " + cart.PatientTc.Substring(0, 3), // mock
+                        totalAmount = totalAmount
+                    }
+                });
             }
             catch (Exception ex)
             {
                 await transaction.RollbackAsync(); 
                 return StatusCode(500, "İşlem sırasında hata oluştu: " + ex.Message);
             }
+        }
+
+        [HttpGet("History")]
+        public async Task<IActionResult> GetSalesHistory()
+        {
+            var completedCarts = await _context.Carts
+                .Where(c => c.IsCompleted)
+                .OrderByDescending(c => c.CreatedAt)
+                .Take(50)
+                .ToListAsync();
+
+            var history = new List<object>();
+
+            foreach (var cart in completedCarts)
+            {
+                var patient = await _context.Patients.FirstOrDefaultAsync(p => p.IdentityNumber == cart.PatientTc);
+                var items = await _context.CartItems.Where(ci => ci.CartId == cart.Id).ToListAsync();
+                
+                var cartDetails = new List<object>();
+                decimal totalAmount = 0;
+
+                foreach(var item in items) {
+                     var med = await _context.Medicines.FindAsync(item.MedicineId);
+                     cartDetails.Add(new {
+                         MedicineName = med?.Name,
+                         Quantity = item.Quantity,
+                         Price = item.PriceAtTime
+                     });
+                     totalAmount += (item.PriceAtTime * item.Quantity);
+                }
+
+                history.Add(new {
+                    CartId = cart.Id,
+                    Date = cart.CreatedAt,
+                    PatientName = patient != null ? $"{patient.FirstName} {patient.LastName}" : cart.PatientTc,
+                    TotalAmount = totalAmount,
+                    Items = cartDetails
+                });
+            }
+
+            return Ok(history);
         }
     }
 }

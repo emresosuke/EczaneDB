@@ -1,58 +1,38 @@
-# 💊 EczaneDB - Comprehensive Pharmacy and CRM Management System
+# 💊 EczaneDB - Modern Pharmacy & CRM Management System
 
-EczaneDB is an enterprise-architecture **Full-Stack Web Application** project developed to digitize and accelerate the daily operational workflows of a modern pharmacy (medicine inventory, patient/CRM management, e-Prescription integration, and sales transactions).
+EczaneDB is an enterprise-architecture **Full-Stack Web Application** designed to digitize and accelerate the daily operational workflows of a modern pharmacy. It covers medicine inventory, patient CRM management, e-Prescription integration, sales tracking, and an authentic checkout experience.
 
-It is designed with an asynchronous (`async/await`) structure, keeping high-traffic scenarios in mind, and features a dynamic search engine capable of responding within milliseconds even with large datasets.
+It is built with a **"Zero-Configuration / Plug & Play"** philosophy. Anyone can clone the repository, run the application, and have a fully seeded local database ready in seconds without needing any external database servers!
 
 ---
 
 ## 🌟 Core Features
 
-* **🔍 Smart Medicine Inventory:** Dynamic search engine using Entity Framework `ILike` function that provides case-insensitive and Turkish character insensitive instant results based on barcode or name.
-* **👥 Patient and CRM Management:** Querying patient history via National Identity Number (TC Kimlik No), registering new patients to the system, and prescription tracking.
-* **📝 e-Prescription Integration and Cryptography:** Reading encrypted (Base64/JSON) 15-character e-Prescription codes, automatically fetching the patient's prescribed medicines from the Medula simulator, and transferring them to the cart.
-* **🛒 Cart Logic:** Selling medicines from prescriptions through a cart in a single transaction.
-* **📦 Advanced Stock Management (FIFO):** Medicine stocks are kept on a batch basis. During a sale, dynamic deduction is performed starting from the stock with the nearest expiration date (First In, First Out logic).
-* **🧪 Big Data Simulation:** Data seeding with 10,000+ rows of synthetic medicine and patient data generated according to Turkish standards using the Python `Faker` library.
+* **⚡ Zero-Config Architecture (SQLite):** No PostgreSQL or Docker installation required! The system automatically creates and seeds a local `eczane.db` file upon the first run.
+* **📊 Sales Dashboard & Kasa:** Track your daily revenue, total sales count, and view detailed past transaction histories dynamically.
+* **🧾 Authentic Receipt Generator:** Completing a sale generates an interactive, printable E-Receipt (Bilgi Fişi) with precise CSS `@media print` rules for flawless physical paper printing.
+* **🚨 Smart Low Stock Alerts:** Real-time visual warnings for medicines whose stock drops below 5.
+* **🔍 Live Medicine Inventory:** Instantly search through medicines using Entity Framework. Update stock amounts on the fly and view manufacturer details via clean UI badges.
+* **👥 Full Patient CRM:** Manage patients! View registered individuals, copy their TC numbers for mock prescriptions, **add new patients** via a modern sliding form, or safely **delete** them.
+* **📝 e-Prescription (Medula) Integration:** Generates encrypted (Base64/JSON) 15-character fake e-Prescription codes. Decrypts codes, fetches prescribed items, and validates stocks dynamically.
+* **📦 FIFO Stock Management:** Stocks are depleted automatically based on earliest expiration dates during checkout.
 
 ---
 
 ## 🛠️ Tech Stack
 
-* **Frontend:** React, Vite, React Router DOM
+* **Frontend:** React, Vite (Glassmorphism & Blur UI, Print CSS)
 * **Backend:** .NET 8 (Web API), C#
 * **ORM:** Entity Framework Core (EF Core) + `EFCore.NamingConventions` (snake_case)
-* **Database:** PostgreSQL (Docker Container Architecture)
-* **Scripting:** Python 3.x (psycopg2, Faker)
-* **Security / Cryptography:** Base64 Encoding, JSON Serialization (CryptoHelper)
+* **Database:** SQLite (Embedded, Zero Setup)
+* **Scripting:** Python 3.x (`sqlite3`, Faker)
+* **Security:** Base64 Encoding, JSON Serialization (CryptoHelper)
 
 ---
 
-## 📂 Project Layout
+## 🚀 "Plug & Play" Setup Guide (Tak-Çalıştır Kurulum)
 
-```text
-EczaneDB/
-├── .gitignore
-├── README.md
-├── database/
-│   ├── seed.py             # Script that populates the database with 10,000+ records
-│   └── requirements.txt    # Python dependencies
-├── frontend/               # User interface built with React (Vite)
-└── backend/
-    └── EczaneManagement.Api/
-        ├── Controllers/    # Endpoints for Medicine, Patient, Sales, and Prescription
-        ├── Data/           # DbContext and PostgreSQL connection bridge
-        ├── Helpers/        # Cryptography (CryptoHelper) and Medula Simulator
-        ├── Models/         # Models for Medicine, Patient, Stock, Cart, CartItem
-        ├── Program.cs      # Application startup and service configurations
-        └── appsettings.json # Database connection string
-```
-
----
-
-## 🚀 Setup and Execution Guide / Kurulum Kılavuzu
-
-Bu projeyi yerelinizde veya kendi bulut ortamınızda çalıştırmak için aşağıdaki adımları takip ediniz.
+This project has been heavily refactored to ensure that anyone downloading it can get it running in under 2 minutes.
 
 ### 1. Clone the Repo
 
@@ -61,42 +41,30 @@ git clone https://github.com/emresosuke/EczaneDB.git
 cd EczaneDB
 ```
 
-### 2. 🛠️ Veritabanı Kurulumu (Kendi Ortamınız)
-Proje, harici bir PostgreSQL (Lokal veya Supabase) mimarisi beklemektedir. Herkesin verisinin izole kalması için:
+### 2. Run the .NET API (Backend) & Auto-Migration
 
-1. Kendinize ait bir PostgreSQL veritabanı (veya ücretsiz Supabase projesi) oluşturun.
-2. `backend/EczaneManagement.Api/appsettings.json` dosyasını açın.
-3. `DefaultConnection` alanına kendi veritabanı bağlantı adresinizi yapıştırın.
-
-> **Not:** Projede `Auto-Migration` özelliği aktiftir. Uygulamayı ilk kez `dotnet run` ile başlattığınızda, tablolar veritabanınızda otomatik olarak inşa edilecektir. Ekstra bir SQL scripti çalıştırmanıza gerek yoktur.
-
-### 3. Seed the Database (Data Seeding)
-
-Run the Python script to inject synthetic pharmacy inventory and patient data into the empty database:
-
-```bash
-cd database
-pip install -r requirements.txt
-python seed.py
-cd ..
-```
-
-### 4. Run the .NET API (Backend)
-
-Navigate to the backend folder and start the API application:
+Navigate to the backend folder and start the API application. Entity Framework will automatically detect the missing database and create the `eczane.db` file!
 
 ```bash
 cd backend/EczaneManagement.Api
-dotnet restore
-dotnet build
-dotnet ef database update  # Applies Entity Framework migrations if necessary
 dotnet run
 ```
-*Note: The backend serves on `http://localhost:5034` by default.*
+*Note: The backend serves on `http://localhost:5034`. Keep this terminal open.*
 
-### 5. Run the User Interface (Frontend)
+### 3. Seed the Database (Inject Data)
 
-Open a new terminal and spin up the React application:
+Open a **new terminal**. We will use the Python script to inject thousands of synthetic medicine and patient records into the newly created SQLite database.
+
+```bash
+cd database
+pip install faker
+python seed.py
+```
+*(The script will automatically find `eczane.db` and fill it with rich, Turkish-localized data.)*
+
+### 4. Run the User Interface (Frontend)
+
+Open a **third terminal** and spin up the React application:
 
 ```bash
 cd frontend
@@ -104,35 +72,28 @@ npm install
 npm run dev
 ```
 
+That's it! Visit the local URL provided by Vite (e.g. `http://localhost:5173`) and start managing your pharmacy!
+
 ---
 
-## 🌐 API Endpoints
+## 🌐 API Endpoints Overview
 
-Once the project is up and running, you can access the Swagger UI at `http://localhost:5034/swagger` or use the following endpoints:
+Once the project is up and running, you can access the Swagger UI at `http://localhost:5034/swagger`. Here is a glance at the main endpoints:
 
-### 💊 Medicine and Inventory Management (Medicine)
-| Method | Endpoint | Description |
-| :--- | :--- | :--- |
-| **GET** | `/api/Medicine` | Performs a dynamic medicine search by name or barcode. |
-| **GET** | `/api/Medicine/{id}` | Retrieves the stock and details of a specific medicine. |
+### 💊 Medicine & Inventory
+* `GET /api/Medicine`: Search medicines dynamically.
+* `POST /api/Medicine/{id}/stock`: Manually update the stock of a specific medicine.
 
-### 👥 Patient Management (Patient)
-| Method | Endpoint | Description |
-| :--- | :--- | :--- |
-| **GET** | `/api/Patient?tc={tcNo}` | Finds the patient's record in the system by National Identity Number. |
-| **POST** | `/api/Patient` | Adds a new patient (CRM record) to the system. |
+### 👥 Patient CRM
+* `GET /api/Patient/All`: Fetch all patients for the CRM dashboard.
+* `POST /api/Patient`: Add a new patient.
+* `DELETE /api/Patient/{id}`: Remove a patient from the system.
 
-### 🧾 Sales Management (Sales)
-| Method | Endpoint | Description |
-| :--- | :--- | :--- |
-| **POST** | `/api/Sale` | Performs a single medicine sale and stock deduction using FIFO logic. |
-
-### 🏥 e-Prescription and Medula Integration (Prescription)
-| Method | Endpoint | Description |
-| :--- | :--- | :--- |
-| **GET** | `/api/Prescription/GenerateMock?tc={tcNo}` | Generates an encrypted fake e-prescription code from random medicines for testing purposes. |
-| **POST** | `/api/Prescription/FetchAndCart` | Decrypts the e-prescription code, verifies the patient, creates a cart, and adds the medicines to it. |
-| **POST** | `/api/Prescription/Checkout/{cartId}` | Approves the cart and deducts all medicines in the cart from the actual stock (FIFO). |
+### 🏥 e-Prescription & Sales (Kasa)
+* `GET /api/Prescription/GenerateMock?tc={tcNo}`: Generate an encrypted fake e-prescription.
+* `POST /api/Prescription/FetchAndCart`: Decode prescription and initialize a cart.
+* `POST /api/Prescription/Checkout/{cartId}`: Finalize sale, deduct stock, and return Printable Receipt JSON.
+* `GET /api/Prescription/History`: Fetch all past completed sales for the Dashboard.
 
 ---
 
