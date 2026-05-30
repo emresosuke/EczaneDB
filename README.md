@@ -36,7 +36,7 @@ EczaneDB/
 Projeyi kendi yerel bilgisayarınızda ayağa kaldırmak için sırasıyla aşağıdaki adımları takip edin:
 
 1. Projeyi Klonlayın
-Bash
+```bash
 git clone [https://github.com/emresosuke/EczaneDB.git](https://github.com/emresosuke/EczaneDB.git)
 cd EczaneDB
 2. Veritabanını Ayağa Kaldırın (Docker & PostgreSQL)
