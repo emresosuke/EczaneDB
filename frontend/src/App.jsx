@@ -4,12 +4,10 @@ function App() {
   const [medicines, setMedicines] = useState([])
   const [searchTerm, setSearchTerm] = useState('')
   
-  // E-Reçete & Sepet State'leri
   const [eRecipeCode, setERecipeCode] = useState('')
   const [activeCart, setActiveCart] = useState(null)
 
   const fetchMedicines = () => {
-    // 🚀 ÇÖZÜM: URL'nin sonuna &t=... ekleyerek tarayıcının Cache (Önbellek) yapmasını zorla engelliyoruz
     fetch(`http://localhost:5034/api/Medicine?search=${searchTerm}&t=${new Date().getTime()}`)
       .then(res => res.json())
       .then(data => setMedicines(data))
@@ -20,7 +18,6 @@ function App() {
     fetchMedicines() 
   }, [searchTerm])
 
-  // 1. E-Reçete Sorgulama (Medula'dan Çekme)
   const handleFetchPrescription = async () => {
     if (!eRecipeCode || eRecipeCode.length !== 15) {
       alert("Lütfen 15 haneli geçerli bir e-Reçete kodu girin!");
@@ -46,7 +43,6 @@ function App() {
     }
   }
 
-  // 2. Sepeti Onaylama (Transaction Checkout)
   const handleCheckout = async () => {
     if (!activeCart) return;
 
@@ -58,26 +54,23 @@ function App() {
       if (response.ok) {
         const msg = await response.text();
         alert(msg);
-        setActiveCart(null); // Sepeti boşalt
-        setERecipeCode(''); // Kodu temizle
-        fetchMedicines(); // Stokların düştüğünü görmek için listeyi yenile
+        setActiveCart(null);
+        setERecipeCode('');
+        fetchMedicines();
       } else {
         const err = await response.text();
-        alert(err); // Stok yetersizse Transaction Rollback mesajını göster
+        alert(err);
       }
     } catch (error) {
       console.error("Ödeme hatası:", error);
     }
   }
 
-  // 3. SUNUM İÇİN TEST: Hızlıca sahte reçete üretmek
   const handleGenerateMock = async () => {
-    // Projeyi sunarken veritabanındaki örnek bir hastanın TC'sini buraya girersin
     const testTc = prompt("Sistemde kayıtlı bir hastanın TC numarasını girin:", "11223344556");
     if (!testTc) return;
 
     try {
-      // Örnek olarak ID'si 1 ve 3 olan ilaçları sepete atıyoruz
       const response = await fetch(`http://localhost:5034/api/Prescription/GenerateMock?tc=${testTc}`);
       if (response.ok) {
         const data = await response.json();
@@ -93,7 +86,6 @@ function App() {
     <div style={{ maxWidth: '950px', margin: '0 auto', padding: '40px', fontFamily: 'system-ui' }}>
       <h1 style={{ color: '#2c3e50', textAlign: 'center', marginBottom: '40px' }}>💊 EczaneDB Medula Terminali</h1>
       
-      {/* 🔐 E-REÇETE SORGULAMA PANELİ */}
       <div style={{ backgroundColor: '#e8f4f8', borderRadius: '8px', padding: '20px', marginBottom: '30px', boxShadow: '0 4px 6px rgba(0,0,0,0.05)' }}>
         <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
           <h2 style={{ marginTop: 0, color: '#2980b9' }}>🔐 1. Adım: e-Reçete (Medula) Sorgulama</h2>
@@ -116,7 +108,6 @@ function App() {
         </div>
       </div>
 
-      {/* 🛒 SEPET VE ONAY PANELİ */}
       {activeCart && (
         <div style={{ backgroundColor: '#fffbe6', borderRadius: '8px', padding: '20px', marginBottom: '30px', border: '2px solid #f1c40f', boxShadow: '0 4px 10px rgba(241,196,15,0.2)' }}>
           <h2 style={{ marginTop: 0, color: '#d35400' }}>🛒 2. Adım: Sepet Onayı ve Kasa</h2>
@@ -150,7 +141,6 @@ function App() {
 
       <hr style={{ border: 'none', borderTop: '2px dashed #bdc3c7', margin: '30px 0' }} />
 
-      {/* 📦 GENEL İLAÇ ENVANTERİ */}
       <div style={{ backgroundColor: '#f8f9fa', borderRadius: '8px', padding: '20px', boxShadow: '0 4px 6px rgba(0,0,0,0.05)' }}>
         <h2 style={{ marginTop: 0, color: '#34495e' }}>📦 Canlı İlaç Envanteri</h2>
         <input 

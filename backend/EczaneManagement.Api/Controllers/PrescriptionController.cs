@@ -17,31 +17,26 @@ namespace EczaneManagement.Api.Controllers
             _context = context;
         }
 
-        // 1. ECZACI UCU: 15 haneli kodu devlete sorar ve sepeti hazırlar
         [HttpPost("FetchAndCart")]
         public async Task<IActionResult> ProcessPrescription([FromBody] string eRecepteKodu)
         {
-            // Eğer gönderilen kod boşsa veya 15 hane değilse direkt reddet
             if (string.IsNullOrWhiteSpace(eRecepteKodu) || eRecepteKodu.Length != 15)
             {
                 return BadRequest("Geçersiz format! e-Reçete kodu tam 15 haneli bir sayı olmalıdır.");
             }
 
-            // 1. Medula Sunucusuna sor
             var data = MedulaSimulator.GetPrescription(eRecepteKodu);
             if (data == null) 
             {
                 return NotFound("Bu koda ait bir reçete bulunamadı. Kod yanlış veya süresi dolmuş olabilir.");
             }
 
-            // 2. Güvenlik: Reçetedeki TC numarası sistemde var mı?
             var patient = await _context.Patients.FirstOrDefaultAsync(p => p.IdentityNumber == data.PatientTc);
             if (patient == null) 
             {
                 return NotFound("Reçetedeki TC numarasına ait hasta veritabanında bulunamadı.");
             }
 
-            // 3. Veritabanında yeni bir Sepet (Cart) oluştur
             var cart = new Cart 
             { 
                 PatientTc = data.PatientTc, 
@@ -50,7 +45,6 @@ namespace EczaneManagement.Api.Controllers
             _context.Carts.Add(cart);
             await _context.SaveChangesAsync();
 
-            // 4. İlaç ID'lerini bul ve sepete at
             var responseItems = new List<object>();
             decimal totalAmount = 0;
 
@@ -110,13 +104,11 @@ namespace EczaneManagement.Api.Controllers
                 DoctorName = "Uzman Dr. Mehmet Yılmaz"
             };
             
-            // Reçeteyi Medula simülatörüne gönder ve 15 haneli kodu al
             string code = MedulaSimulator.CreatePrescription(data);
             
             return Ok(new { Code = code });
         }
 
-       // 3. SEPETİ ONAYLA VE SATIŞI BİTİR (Transaction Mantığı)
         [HttpPost("Checkout/{cartId}")]
         public async Task<IActionResult> CheckoutCart(int cartId)
         {
@@ -125,7 +117,6 @@ namespace EczaneManagement.Api.Controllers
             if (cart == null) return NotFound("Sepet bulunamadı.");
             if (cart.IsCompleted) return BadRequest("Bu sepetin satışı zaten onaylanmış!");
 
-            // 🚀 KESİN ÇÖZÜM: Include kullanmak yerine sepet kalemlerini doğrudan ID ile çekiyoruz
             var cartItems = await _context.CartItems.Where(ci => ci.CartId == cartId).ToListAsync();
 
             if (!cartItems.Any()) return BadRequest("Bu sepetin içi boş!");
@@ -143,7 +134,6 @@ namespace EczaneManagement.Api.Controllers
                         return BadRequest($"Satış İptal: '{medicine?.Name}' adlı ilacın stoku yetersiz!");
                     }
 
-                    // Stoku düş (FIFO mantığı ile eski tarihlilerden başlayarak)
                     var remainingToDeduct = item.Quantity;
                     var stocks = await _context.Stocks
                         .Where(s => s.MedicineId == item.MedicineId && s.Quantity > 0)
