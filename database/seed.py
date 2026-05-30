@@ -7,10 +7,10 @@ from faker import Faker
 fake = Faker("tr_TR")
 
 DB_CONFIG = {
-    "host": "127.0.0.1",
+    "host": "***GIZLI_HOST***",
     "database": "postgres",
     "user": "postgres",
-    "password": "1234",
+    "password": "***GIZLI_SIFRE***",
     "port": "5432",
 }
 
@@ -107,35 +107,35 @@ def seed_data():
             )
             patient_ids.append(cursor.fetchone()[0])
 
-        print("📝 Geçmiş reçete simülasyonları bağlanıyor...")
-        for _ in range(150):
-            patient_id = random.choice(patient_ids)
-            doctor_name = "Dr. " + fake.name()
-            protocol_number = f"REC-{random.randint(100000, 999999)}"
-            prescription_date = datetime.now().date() - timedelta(days=random.randint(1, 60))
-            is_approved = random.choice([True, False])
+        # print("📝 Geçmiş reçete simülasyonları bağlanıyor...")
+        # for _ in range(150):
+        #     patient_id = random.choice(patient_ids)
+        #     doctor_name = "Dr. " + fake.name()
+        #     protocol_number = f"REC-{random.randint(100000, 999999)}"
+        #     prescription_date = datetime.now().date() - timedelta(days=random.randint(1, 60))
+        #     is_approved = random.choice([True, False])
 
-            cursor.execute(
-                """
-                INSERT INTO prescriptions (patient_id, doctor_name, protocol_number, prescription_date, is_approved)
-                VALUES (%s, %s, %s, %s, %s) RETURNING id;
-            """,
-                (patient_id, doctor_name, protocol_number, prescription_date, is_approved),
-            )
-            prescription_id = cursor.fetchone()[0]
+        #     cursor.execute(
+        #         """
+        #         INSERT INTO prescriptions (patient_id, doctor_name, protocol_number, prescription_date, is_approved)
+        #         VALUES (%s, %s, %s, %s, %s) RETURNING id;
+        #     """,
+        #         (patient_id, doctor_name, protocol_number, prescription_date, is_approved),
+        #     )
+        #     prescription_id = cursor.fetchone()[0]
 
-            selected_meds = random.sample(medicine_ids, random.randint(1, 4))
-            for med_id in selected_meds:
-                req_qty = random.randint(1, 3)
-                given_qty = req_qty if is_approved else 0
+        #     selected_meds = random.sample(medicine_ids, random.randint(1, 4))
+        #     for med_id in selected_meds:
+        #         req_qty = random.randint(1, 3)
+        #         given_qty = req_qty if is_approved else 0
 
-                cursor.execute(
-                    """
-                    INSERT INTO prescription_items (prescription_id, medicine_id, requested_quantity, given_quantity)
-                    VALUES (%s, %s, %s, %s);
-                """,
-                    (prescription_id, med_id, req_qty, given_qty),
-                )
+        #         cursor.execute(
+        #             """
+        #             INSERT INTO prescription_items (prescription_id, medicine_id, requested_quantity, given_quantity)
+        #             VALUES (%s, %s, %s, %s);
+        #         """,
+        #             (prescription_id, med_id, req_qty, given_qty),
+        #         )
 
         conn.commit()
         print("✨ Tebrikler! Veritabanı başarıyla tohumlandı (Seeded).")

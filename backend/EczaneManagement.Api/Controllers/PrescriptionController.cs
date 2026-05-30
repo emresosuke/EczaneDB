@@ -18,20 +18,21 @@ namespace EczaneManagement.Api.Controllers
         }
 
         [HttpPost("FetchAndCart")]
-        public async Task<IActionResult> ProcessPrescription([FromBody] string eRecepteKodu)
+        public async Task<IActionResult> ProcessPrescription([FromBody] string eReceteKodu)
         {
-            if (string.IsNullOrWhiteSpace(eRecepteKodu) || eRecepteKodu.Length != 15)
+            if (string.IsNullOrWhiteSpace(eReceteKodu) || eReceteKodu.Length != 15)
             {
                 return BadRequest("Geçersiz format! e-Reçete kodu tam 15 haneli bir sayı olmalıdır.");
             }
 
-            var data = MedulaSimulator.GetPrescription(eRecepteKodu);
+            var data = MedulaSimulator.GetPrescription(eReceteKodu);
             if (data == null) 
             {
                 return NotFound("Bu koda ait bir reçete bulunamadı. Kod yanlış veya süresi dolmuş olabilir.");
             }
 
-            var patient = await _context.Patients.FirstOrDefaultAsync(p => p.IdentityNumber == data.PatientTc);
+            var patientTc = data.PatientTc?.Trim();
+            var patient = await _context.Patients.FirstOrDefaultAsync(p => p.IdentityNumber == patientTc);
             if (patient == null) 
             {
                 return NotFound("Reçetedeki TC numarasına ait hasta veritabanında bulunamadı.");
@@ -40,7 +41,7 @@ namespace EczaneManagement.Api.Controllers
             var cart = new Cart 
             { 
                 PatientTc = data.PatientTc, 
-                EPrescriptionCode = eRecepteKodu 
+                EPrescriptionCode = eReceteKodu 
             };
             _context.Carts.Add(cart);
             await _context.SaveChangesAsync();
@@ -82,6 +83,17 @@ namespace EczaneManagement.Api.Controllers
         [HttpGet("GenerateMock")]
         public async Task<IActionResult> GenerateMockCode(string tc)
         {
+            if (!string.IsNullOrEmpty(tc))
+            {
+                tc = new string(tc.Where(char.IsDigit).ToArray());
+            }
+
+            var patientExists = await _context.Patients.AnyAsync(p => p.IdentityNumber == tc);
+            if (!patientExists)
+            {
+                return NotFound("Verilen TC numarasına ait hasta veritabanında bulunamadı. Lütfen geçerli bir TC giriniz.");
+            }
+
             var medIds = await _context.Medicines
                                 .Where(m => m.RequiresPrescription)
                                 .Select(m => m.Id)

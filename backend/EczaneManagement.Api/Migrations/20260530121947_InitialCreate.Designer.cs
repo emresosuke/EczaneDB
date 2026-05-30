@@ -12,8 +12,8 @@ using Npgsql.EntityFrameworkCore.PostgreSQL.Metadata;
 namespace EczaneManagement.Api.Migrations
 {
     [DbContext(typeof(AppDbContext))]
-    [Migration("20260530031204_AddCartAndCartItems")]
-    partial class AddCartAndCartItems
+    [Migration("20260530121947_InitialCreate")]
+    partial class InitialCreate
     {
         /// <inheritdoc />
         protected override void BuildTargetModel(ModelBuilder modelBuilder)
@@ -51,7 +51,8 @@ namespace EczaneManagement.Api.Migrations
                         .HasColumnType("text")
                         .HasColumnName("patient_tc");
 
-                    b.HasKey("Id");
+                    b.HasKey("Id")
+                        .HasName("pk_carts");
 
                     b.ToTable("carts");
                 });
@@ -81,7 +82,8 @@ namespace EczaneManagement.Api.Migrations
                         .HasColumnType("integer")
                         .HasColumnName("quantity");
 
-                    b.HasKey("Id");
+                    b.HasKey("Id")
+                        .HasName("pk_cart_items");
 
                     b.HasIndex("CartId");
 
@@ -127,7 +129,8 @@ namespace EczaneManagement.Api.Migrations
                         .HasColumnType("boolean")
                         .HasColumnName("requires_prescription");
 
-                    b.HasKey("Id");
+                    b.HasKey("Id")
+                        .HasName("pk_medicines");
 
                     b.ToTable("medicines");
                 });
@@ -149,7 +152,7 @@ namespace EczaneManagement.Api.Migrations
                         .HasColumnType("text")
                         .HasColumnName("chronic_illnesses");
 
-                    b.Property<DateTime>("CreatedAt")
+                    b.Property<DateTime?>("CreatedAt")
                         .HasColumnType("timestamp without time zone")
                         .HasColumnName("created_at");
 
@@ -172,7 +175,8 @@ namespace EczaneManagement.Api.Migrations
                         .HasColumnType("text")
                         .HasColumnName("phone");
 
-                    b.HasKey("Id");
+                    b.HasKey("Id")
+                        .HasName("pk_patients");
 
                     b.ToTable("patients");
                 });
@@ -207,7 +211,8 @@ namespace EczaneManagement.Api.Migrations
                         .HasColumnType("timestamp without time zone")
                         .HasColumnName("updated_at");
 
-                    b.HasKey("Id");
+                    b.HasKey("Id")
+                        .HasName("pk_stocks");
 
                     b.ToTable("stocks");
                 });
@@ -218,13 +223,15 @@ namespace EczaneManagement.Api.Migrations
                         .WithMany("Items")
                         .HasForeignKey("CartId")
                         .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
+                        .IsRequired()
+                        .HasConstraintName("fk_cart_items_carts_cart_id");
 
                     b.HasOne("EczaneManagement.Api.Models.Medicine", "Medicine")
                         .WithMany()
                         .HasForeignKey("MedicineId")
                         .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
+                        .IsRequired()
+                        .HasConstraintName("fk_cart_items_medicines_medicine_id");
 
                     b.Navigation("Cart");
 

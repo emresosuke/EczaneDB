@@ -67,7 +67,7 @@ function App() {
   }
 
   const handleGenerateMock = async () => {
-    const testTc = prompt("Sistemde kayıtlı bir hastanın TC numarasını girin:", "11223344556");
+    const testTc = prompt("Sistemde kayıtlı bir hastanın TC numarasını girin:", "12736967201");
     if (!testTc) return;
 
     try {
@@ -76,9 +76,13 @@ function App() {
         const data = await response.json();
         setERecipeCode(data.code);
         alert(`✅ Devlet Sunucusu Simüle Edildi!\n\n15 Haneli e-Reçete Kodu: ${data.code}\n\nKod arama kutusuna otomatik olarak eklendi.`);
+      } else {
+        const err = await response.text();
+        alert(`❌ Hata: ${err}`);
       }
     } catch (error) {
       console.error("Mock üretme hatası:", error);
+      alert("Sunucuya ulaşılamadı. Lütfen backend'in çalıştığından emin olun.");
     }
   }
 
