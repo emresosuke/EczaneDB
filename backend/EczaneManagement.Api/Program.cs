@@ -3,8 +3,19 @@ using EczaneManagement.Api.Data;
  // 👈 BU SATIRI EN TEPEYE EKLE
 
 var builder = WebApplication.CreateBuilder(args);
-// ... geri kalan kodlar
-// 1. KONTROLCÜLERİ (CONTROLLERS) SİSTEME TANITIYORUZ (KRİTİK ADIM)
+
+// 1. REACT İÇİN CORS İZNİNİ EKLİYORUZ (VIP Geçiş)
+builder.Services.AddCors(options =>
+{
+    options.AddPolicy("AllowReactApp",
+        policy =>
+        {
+            policy.WithOrigins("http://localhost:5173") // React'in çalıştığı adres
+                  .AllowAnyHeader()
+                  .AllowAnyMethod();
+        });
+});
+
 builder.Services.AddControllers();
 
 // Swagger/OpenAPI altyapısını aktif ediyoruz
@@ -19,6 +30,7 @@ builder.Services.AddDbContext<AppDbContext>(options =>
 
 var app = builder.Build();
 
+app.UseCors("AllowReactApp");
 // 2. SWAGGER ARAYÜZÜNÜN ÇALIŞMASINI SAĞLIYORUZ
 if (app.Environment.IsDevelopment())
 {
