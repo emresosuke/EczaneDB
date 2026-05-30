@@ -1,77 +1,77 @@
-# 💊 EczaneDB - Kapsamlı Eczane ve CRM Yönetim Sistemi
+# 💊 EczaneDB - Comprehensive Pharmacy and CRM Management System
 
-EczaneDB, modern bir eczanenin günlük operasyonel iş akışlarını (ilaç envanteri, hasta/CRM yönetimi, e-Reçete entegrasyonu ve satış işlemleri) dijitalleştirmek ve hızlandırmak amacıyla geliştirilmiş, kurumsal mimariye sahip bir **Full-Stack Web Uygulaması** projesidir.
+EczaneDB is an enterprise-architecture **Full-Stack Web Application** project developed to digitize and accelerate the daily operational workflows of a modern pharmacy (medicine inventory, patient/CRM management, e-Prescription integration, and sales transactions).
 
-Yüksek trafikli senaryolar düşünülerek asenkron (`async/await`) yapıda tasarlanmış olup, büyük veri kümelerinde bile milisaniyeler içinde yanıt verebilen dinamik bir arama motoruna sahiptir.
-
----
-
-## 🌟 Temel Özellikler (Core Features)
-
-* **🔍 Akıllı İlaç Envanteri:** Entity Framework `ILike` fonksiyonu ile Türkçe karakter ve büyük/küçük harf duyarsız (Case-Insensitive), barkod veya isme göre anında sonuç veren dinamik arama motoru.
-* **👥 Hasta ve CRM Yönetimi:** TC Kimlik Numarası üzerinden hasta geçmişi sorgulama, sisteme yeni hasta kaydetme ve reçete takibi.
-* **📝 E-Reçete Entegrasyonu ve Kriptografi:** Şifrelenmiş (Base64/JSON) 15 haneli e-Reçete kodlarını okuma, hastanın reçetedeki ilaçlarını otomatik olarak Medula simülatöründen çekme ve sepete aktarma.
-* **🛒 Sepet (Cart) Mantığı:** Reçeteden gelen ilaçların tek bir işlemde (Transaction) sepet üzerinden satılması.
-* **📦 Gelişmiş Stok Yönetimi (FIFO):** İlaç stokları parti (batch) bazlı tutulur. Satış sırasında son kullanma tarihi en yakın olan stoktan (İlk Giren İlk Çıkar mantığı ile) dinamik düşüm işlemi yapılır.
-* **🧪 Büyük Veri Simülasyonu:** Python `Faker` kütüphanesi kullanılarak Türkiye standartlarına uygun üretilmiş 10.000+ satırlık yapay ilaç ve hasta verisi (Data Seeding).
+It is designed with an asynchronous (`async/await`) structure, keeping high-traffic scenarios in mind, and features a dynamic search engine capable of responding within milliseconds even with large datasets.
 
 ---
 
-## 🛠️ Kullanılan Teknolojiler (Tech Stack)
+## 🌟 Core Features
+
+* **🔍 Smart Medicine Inventory:** Dynamic search engine using Entity Framework `ILike` function that provides case-insensitive and Turkish character insensitive instant results based on barcode or name.
+* **👥 Patient and CRM Management:** Querying patient history via National Identity Number (TC Kimlik No), registering new patients to the system, and prescription tracking.
+* **📝 e-Prescription Integration and Cryptography:** Reading encrypted (Base64/JSON) 15-character e-Prescription codes, automatically fetching the patient's prescribed medicines from the Medula simulator, and transferring them to the cart.
+* **🛒 Cart Logic:** Selling medicines from prescriptions through a cart in a single transaction.
+* **📦 Advanced Stock Management (FIFO):** Medicine stocks are kept on a batch basis. During a sale, dynamic deduction is performed starting from the stock with the nearest expiration date (First In, First Out logic).
+* **🧪 Big Data Simulation:** Data seeding with 10,000+ rows of synthetic medicine and patient data generated according to Turkish standards using the Python `Faker` library.
+
+---
+
+## 🛠️ Tech Stack
 
 * **Frontend:** React, Vite, React Router DOM
 * **Backend:** .NET 8 (Web API), C#
 * **ORM:** Entity Framework Core (EF Core) + `EFCore.NamingConventions` (snake_case)
-* **Veritabanı:** PostgreSQL (Docker Konteyner Mimarisi)
+* **Database:** PostgreSQL (Docker Container Architecture)
 * **Scripting:** Python 3.x (psycopg2, Faker)
-* **Güvenlik / Kriptoloji:** Base64 Encoding, JSON Serialization (CryptoHelper)
+* **Security / Cryptography:** Base64 Encoding, JSON Serialization (CryptoHelper)
 
 ---
 
-## 📂 Klasör Yapısı (Project Layout)
+## 📂 Project Layout
 
 ```text
 EczaneDB/
 ├── .gitignore
 ├── README.md
 ├── database/
-│   ├── seed.py             # Veritabanını 10.000+ veriyle dolduran script
-│   └── requirements.txt    # Python bağımlılıkları
-├── frontend/               # React ile geliştirilmiş kullanıcı arayüzü (Vite)
+│   ├── seed.py             # Script that populates the database with 10,000+ records
+│   └── requirements.txt    # Python dependencies
+├── frontend/               # User interface built with React (Vite)
 └── backend/
     └── EczaneManagement.Api/
-        ├── Controllers/    # Medicine, Patient, Sales ve Prescription Endpoint'leri
-        ├── Data/           # DbContext ve PostgreSQL bağlantı köprüsü
-        ├── Helpers/        # Kriptografi (CryptoHelper) ve Medula Simülatörü
-        ├── Models/         # Medicine, Patient, Stock, Cart, CartItem modelleri
-        ├── Program.cs      # Uygulama ayağa kalkış ve servis ayarları
-        └── appsettings.json # Veritabanı bağlantı dizesi
+        ├── Controllers/    # Endpoints for Medicine, Patient, Sales, and Prescription
+        ├── Data/           # DbContext and PostgreSQL connection bridge
+        ├── Helpers/        # Cryptography (CryptoHelper) and Medula Simulator
+        ├── Models/         # Models for Medicine, Patient, Stock, Cart, CartItem
+        ├── Program.cs      # Application startup and service configurations
+        └── appsettings.json # Database connection string
 ```
 
 ---
 
-## 🚀 Kurulum ve Çalıştırma Rehberi
+## 🚀 Setup and Execution Guide
 
-Projeyi kendi yerel ortamınızda tam kapasiteyle ayağa kaldırmak için aşağıdaki adımları sırasıyla uygulayın:
+Follow the steps below in order to get the project fully up and running on your local environment:
 
-### 1. Repoyu Klonlayın
+### 1. Clone the Repo
 
 ```bash
 git clone https://github.com/emresosuke/EczaneDB.git
 cd EczaneDB
 ```
 
-### 2. Veritabanını Başlatın (Docker)
+### 2. Start the Database (Docker)
 
-Bilgisayarınızda Docker Desktop'ın çalıştığından emin olun ve PostgreSQL konteynerini izole olarak ayağa kaldırın:
+Make sure Docker Desktop is running on your computer and spin up the PostgreSQL container in an isolated manner:
 
 ```bash
 docker run --name eczane-postgres -e POSTGRES_PASSWORD=1234 -p 5432:5432 -d postgres
 ```
 
-### 3. Veritabanını Tohumlayın (Data Seeding)
+### 3. Seed the Database (Data Seeding)
 
-Boş veritabanına yapay eczane envanterini ve hasta verilerini basmak için Python scriptini çalıştırın:
+Run the Python script to inject synthetic pharmacy inventory and patient data into the empty database:
 
 ```bash
 cd database
@@ -80,22 +80,22 @@ python seed.py
 cd ..
 ```
 
-### 4. .NET API'yi Çalıştırın (Backend)
+### 4. Run the .NET API (Backend)
 
-Backend klasörüne geçerek API uygulamasını başlatın:
+Navigate to the backend folder and start the API application:
 
 ```bash
 cd backend/EczaneManagement.Api
 dotnet restore
 dotnet build
-dotnet ef database update  # Gerekirse Entity Framework migration'larını uygular
+dotnet ef database update  # Applies Entity Framework migrations if necessary
 dotnet run
 ```
-*Not: Backend varsayılan olarak `http://localhost:5034` üzerinden hizmet verir.*
+*Note: The backend serves on `http://localhost:5034` by default.*
 
-### 5. Kullanıcı Arayüzünü Çalıştırın (Frontend)
+### 5. Run the User Interface (Frontend)
 
-Yeni bir terminal açın ve React uygulamasını ayağa kaldırın:
+Open a new terminal and spin up the React application:
 
 ```bash
 cd frontend
@@ -105,34 +105,34 @@ npm run dev
 
 ---
 
-## 🌐 API Uç Noktaları (Endpoints)
+## 🌐 API Endpoints
 
-Proje ayağa kalktıktan sonra `http://localhost:5034/swagger` adresinden Swagger arayüzüne erişebilir veya aşağıdaki uç noktaları kullanabilirsiniz:
+Once the project is up and running, you can access the Swagger UI at `http://localhost:5034/swagger` or use the following endpoints:
 
-### 💊 İlaç ve Envanter Yönetimi (Medicine)
-| Metot | Endpoint | Açıklama |
+### 💊 Medicine and Inventory Management (Medicine)
+| Method | Endpoint | Description |
 | :--- | :--- | :--- |
-| **GET** | `/api/Medicine` | İsim veya barkoda göre dinamik ilaç araması yapar. |
-| **GET** | `/api/Medicine/{id}` | Belirli bir ilacın stok ve detaylarını getirir. |
+| **GET** | `/api/Medicine` | Performs a dynamic medicine search by name or barcode. |
+| **GET** | `/api/Medicine/{id}` | Retrieves the stock and details of a specific medicine. |
 
-### 👥 Hasta Yönetimi (Patient)
-| Metot | Endpoint | Açıklama |
+### 👥 Patient Management (Patient)
+| Method | Endpoint | Description |
 | :--- | :--- | :--- |
-| **GET** | `/api/Patient?tc={tcNo}` | TC Kimlik No ile hastanın sistemdeki kaydını bulur. |
-| **POST** | `/api/Patient` | Sisteme yeni bir hasta (CRM kaydı) ekler. |
+| **GET** | `/api/Patient?tc={tcNo}` | Finds the patient's record in the system by National Identity Number. |
+| **POST** | `/api/Patient` | Adds a new patient (CRM record) to the system. |
 
-### 🧾 Satış Yönetimi (Sales)
-| Metot | Endpoint | Açıklama |
+### 🧾 Sales Management (Sales)
+| Method | Endpoint | Description |
 | :--- | :--- | :--- |
-| **POST** | `/api/Sale` | Tekil ilaç satışı ve FIFO mantığı ile stok düşümü yapar. |
+| **POST** | `/api/Sale` | Performs a single medicine sale and stock deduction using FIFO logic. |
 
-### 🏥 E-Reçete ve Medula Entegrasyonu (Prescription)
-| Metot | Endpoint | Açıklama |
+### 🏥 e-Prescription and Medula Integration (Prescription)
+| Method | Endpoint | Description |
 | :--- | :--- | :--- |
-| **GET** | `/api/Prescription/GenerateMock?tc={tcNo}` | Test amaçlı, rastgele ilaçlardan şifrelenmiş sahte e-reçete kodu üretir. |
-| **POST** | `/api/Prescription/FetchAndCart` | E-Reçete kodunu çözer, hastayı doğrular ve ilaçları sepet oluşturup ekler. |
-| **POST** | `/api/Prescription/Checkout/{cartId}` | Sepeti onaylar ve sepetteki tüm ilaçları gerçek stoktan (FIFO) düşer. |
+| **GET** | `/api/Prescription/GenerateMock?tc={tcNo}` | Generates an encrypted fake e-prescription code from random medicines for testing purposes. |
+| **POST** | `/api/Prescription/FetchAndCart` | Decrypts the e-prescription code, verifies the patient, creates a cart, and adds the medicines to it. |
+| **POST** | `/api/Prescription/Checkout/{cartId}` | Approves the cart and deducts all medicines in the cart from the actual stock (FIFO). |
 
 ---
 
-**Geliştirici:** Yunus Emre Kaya
+**Developer:** Yunus Emre Kaya
