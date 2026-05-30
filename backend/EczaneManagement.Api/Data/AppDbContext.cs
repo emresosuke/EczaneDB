@@ -12,6 +12,8 @@ namespace EczaneManagement.Api.Data
 
         public DbSet<Medicine> Medicines { get; set; }
         public DbSet<Patient> Patients { get; set; }
+        public DbSet<Cart> Carts { get; set; }
+        public DbSet<CartItem> CartItems { get; set; }
         public DbSet<Stock> Stocks { get; set; }
     }
 }
